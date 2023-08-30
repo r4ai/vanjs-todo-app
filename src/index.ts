@@ -1,6 +1,6 @@
 import van from "vanjs-core";
 
-const { form, div, input, button, ul, li, label } = van.tags;
+const { form, div, input, button, ul, li, label, h2, h1 } = van.tags;
 
 type Todo = {
   id: number;
@@ -8,18 +8,7 @@ type Todo = {
   isDone: boolean;
 };
 
-const todos = van.state<Todo[]>([
-  {
-    id: 1,
-    title: "Buy milk",
-    isDone: true,
-  },
-  {
-    id: 2,
-    title: "Learn VanJS",
-    isDone: false,
-  },
-]);
+const todos = van.state<Todo[]>([]);
 
 const TodoItem = ({ id }: Todo) => {
   const todo = todos.val.find((x) => x.id === id);
@@ -33,6 +22,8 @@ const TodoItem = ({ id }: Todo) => {
     });
   };
 
+  const handleDeleteTodo = (e: InputEvent) => {};
+
   return div(
     input({
       type: "checkbox",
@@ -40,12 +31,21 @@ const TodoItem = ({ id }: Todo) => {
       id: `todo-${id}`,
       onchange: handleCheckTodo,
     }),
-    label({ for: `todo-${id}` }, todo?.title ?? "")
+    label({ for: `todo-${id}` }, todo?.title ?? ""),
+    button({ onclick: handleDeleteTodo }, "×")
   );
 };
 
 const App = () => {
   const newTodoTitle = van.state("");
+
+  // Get initial todos from localStorage
+  todos.val = JSON.parse(localStorage.getItem("todos") ?? "[]");
+
+  // Save todos to localStorage
+  van.derive(() => {
+    localStorage.setItem("todos", JSON.stringify(todos.val));
+  });
 
   const handleTodoSubmit = (e: Event) => {
     e.preventDefault();
@@ -58,7 +58,20 @@ const App = () => {
   };
 
   return div(
-    () => ul(todos.val.map((todo) => li(TodoItem(todo)))),
+    div(h2("Todo List"), () =>
+      ul(
+        todos.val
+          .filter((todo) => !todo.isDone)
+          .map((todo) => li(TodoItem(todo)))
+      )
+    ),
+    div(h2("Done List"), () =>
+      ul(
+        todos.val
+          .filter((todo) => todo.isDone)
+          .map((todo) => li(TodoItem(todo)))
+      )
+    ),
     form(
       { onsubmit: handleTodoSubmit },
       input({
