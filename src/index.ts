@@ -72,27 +72,33 @@ const App = () => {
   };
 
   return div(
-    { class: "flex flex-col gap-8 max-w-lg mx-auto px-4" },
+    {
+      class:
+        "flex flex-col gap-8 max-w-lg mx-auto px-4 py-4 h-full overflow-y-hidden",
+    },
     div(
-      { class: "flex flex-col gap-4" },
-      h2({ class: "text-2xl font-bold" }, "Todo List"),
-      () =>
-        ul(
-          { class: "flex flex-col gap-2" },
-          todos.val
-            .filter((todo) => !todo.isDone)
-            .map((todo) => li(TodoItem(todo)))
-        )
-    ),
-    div(
-      { class: "flex flex-col gap-4" },
-      h2({ class: "text-2xl font-bold" }, "Done List"),
-      () =>
-        ul(
-          todos.val
-            .filter((todo) => todo.isDone)
-            .map((todo) => li(TodoItem(todo)))
-        )
+      { class: "grow overflow-y-auto" },
+      div(
+        { class: "flex flex-col gap-4" },
+        h2({ class: "text-2xl font-bold" }, "Todo List"),
+        () =>
+          ul(
+            { class: "flex flex-col gap-2" },
+            todos.val
+              .filter((todo) => !todo.isDone)
+              .map((todo) => li(TodoItem(todo)))
+          )
+      ),
+      div(
+        { class: "flex flex-col gap-4" },
+        h2({ class: "text-2xl font-bold" }, "Done List"),
+        () =>
+          ul(
+            todos.val
+              .filter((todo) => todo.isDone)
+              .map((todo) => li(TodoItem(todo)))
+          )
+      )
     ),
     form(
       { onsubmit: handleTodoSubmit, class: "flex flex-row items-center gap-2" },
